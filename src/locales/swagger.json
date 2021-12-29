@@ -1,0 +1,1587 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is a simple CRUD API application made with Express and documented with Swagger",
+      "version": "1.0.0",
+      "title": "Swagger Bookstore"
+    },
+    "host": "localhost:8000",
+    "basePath": "/api",
+    "tags": [
+      {
+        "name": "user",
+        "description": "Description about user"
+      },
+      {
+        "name": "book",
+        "description": "Description about book"
+      },
+      {
+        "name": "cart",
+        "description": "Description about cart"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+      "/user": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Create",
+          "operationId": "createUser",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Created user object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Create successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation request data error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 400
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Email must be unique"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/login": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Login",
+          "description": "",
+          "operationId": "login",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Login",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "xdt@bookstore.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "@Aa123456"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Login successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "fullName": {
+                        "type": "string",
+                        "example": "Lisa Nguyễn"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "lisa@bookstore.com"
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "admin",
+                          "user"
+                        ],
+                        "example": "user"
+                      },
+                      "accessToken": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIs..."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Validation request data error or wrong login information",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Incorrect Email or Password"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/book": {
+        "get": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Get list of book",
+          "description": "",
+          "operationId": "getListBook",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Get list of book successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "ObjectId",
+                          "example": "61c0be8e005c147334135e2b"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "NT Training Book"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "/images/book/image_1640021646558.jpg"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "drama",
+                            "comedy",
+                            "sport"
+                          ],
+                          "example": "drama"
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "example": 3
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 10000
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Description about book"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Create book",
+          "description": "",
+          "operationId": "createBook",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "formData",
+              "name": "image",
+              "description": "Book's image",
+              "required": true,
+              "type": "file"
+            },
+            {
+              "in": "formData",
+              "name": "title",
+              "description": "",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "formData",
+              "name": "category",
+              "description": "",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "formData",
+              "name": "quantity",
+              "description": "",
+              "required": true,
+              "type": "number"
+            },
+            {
+              "in": "formData",
+              "name": "price",
+              "description": "",
+              "required": true,
+              "type": "number"
+            },
+            {
+              "in": "formData",
+              "name": "description",
+              "description": "",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Create successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation request data error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 400
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "title is required"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token or not allowed",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/book/{id}": {
+        "get": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Retrieve book by ID",
+          "description": "",
+          "operationId": "retrieveBook",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the book that needs to be retrieved",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Retrieve successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "NT Training Book"
+                      },
+                      "image": {
+                        "type": "string",
+                        "example": "/images/book/image_1640021646558.jpg"
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "drama",
+                          "comedy",
+                          "sport"
+                        ],
+                        "example": "drama"
+                      },
+                      "quantity": {
+                        "type": "number",
+                        "example": 3
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 10000
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Description about book"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Book ID not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find book"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Update book by ID",
+          "description": "",
+          "operationId": "updateBook",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the book that needs to be updated",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "description": "",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "NT Training Book"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "drama",
+                      "comedy",
+                      "sport"
+                    ],
+                    "example": "drama"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "example": 3
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 10000
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Description about book"
+                  }
+                }
+              }
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Update successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "NT Training Book"
+                      },
+                      "image": {
+                        "type": "string",
+                        "example": "/images/book/image_1640021646558.jpg"
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "drama",
+                          "comedy",
+                          "sport"
+                        ],
+                        "example": "drama"
+                      },
+                      "quantity": {
+                        "type": "number",
+                        "example": 3
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 10000
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Description about book"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token or not allowed",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Book ID not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find book"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Delete book by ID",
+          "description": "",
+          "operationId": "deleteBook",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the book that needs to be deleted",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Delete successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token or not allowed",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Book ID not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find book"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/book/{id}/image": {
+        "put": {
+          "tags": [
+            "book"
+          ],
+          "summary": "Update book image",
+          "description": "",
+          "operationId": "updateBookImage",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the book that needs to be updated",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "formData",
+              "name": "image",
+              "description": "Book's image",
+              "required": true,
+              "type": "file"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Update successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "NT Training Book"
+                      },
+                      "image": {
+                        "type": "string",
+                        "example": "/images/book/image_1640021646558.jpg"
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "drama",
+                          "comedy",
+                          "sport"
+                        ],
+                        "example": "drama"
+                      },
+                      "quantity": {
+                        "type": "number",
+                        "example": 3
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 10000
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Description about book"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation request data error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 400
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "image is required"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token or not allowed",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/cart": {
+        "get": {
+          "tags": [
+            "cart"
+          ],
+          "summary": "Get list of cart",
+          "description": "",
+          "operationId": "getListCart",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Get list of cart successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "ObjectId",
+                          "example": "61c0be8e005c147334135e2b"
+                        },
+                        "owner": {
+                          "type": "ObjectId",
+                          "example": "61c0be8e005c147334135e2b"
+                        },
+                        "totalAmount": {
+                          "type": "number",
+                          "example": 2
+                        },
+                        "category": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "book": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "ObjectId",
+                              "example": "61c0be8e005c147334135e2b"
+                            },
+                            "title": {
+                              "type": "string",
+                              "example": "NT Training Book"
+                            },
+                            "image": {
+                              "type": "string",
+                              "example": "/images/book/image_1640021646558.jpg"
+                            },
+                            "category": {
+                              "type": "string",
+                              "enum": [
+                                "drama",
+                                "comedy",
+                                "sport"
+                              ],
+                              "example": "drama"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 10000
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "Description about book"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token or you are not owner",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "cart"
+          ],
+          "summary": "Create cart",
+          "description": "",
+          "operationId": "createCart",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "book": {
+                    "type": "ObjectId",
+                    "example": "61c0be8e005c147334135e2b"
+                  },
+                  "totalAmount": {
+                    "type": "number",
+                    "example": 3
+                  }
+                }
+              }
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Create successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation request data error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 400
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "totalAmount is required"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/cart/{id}": {
+        "get": {
+          "tags": [
+            "cart"
+          ],
+          "summary": "Retrieve cart by ID",
+          "description": "",
+          "operationId": "retrieveCart",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the cart that needs to be retrieved",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Retrieve successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "owner": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "totalAmount": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "category": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "book": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "ObjectId",
+                            "example": "61c0be8e005c147334135e2b"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "NT Training Book"
+                          },
+                          "image": {
+                            "type": "string",
+                            "example": "/images/book/image_1640021646558.jpg"
+                          },
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "drama",
+                              "comedy",
+                              "sport"
+                            ],
+                            "example": "drama"
+                          },
+                          "price": {
+                            "type": "number",
+                            "example": 10000
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Description about book"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Cart not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find cart"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "cart"
+          ],
+          "summary": "Update cart by ID",
+          "description": "",
+          "operationId": "updateCart",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the cart that needs to be updated",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "description": "",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "totalAmount": {
+                    "type": "number",
+                    "example": 3
+                  }
+                }
+              }
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Update successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "owner": {
+                        "type": "ObjectId",
+                        "example": "61c0be8e005c147334135e2b"
+                      },
+                      "totalAmount": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "category": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "book": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "ObjectId",
+                            "example": "61c0be8e005c147334135e2b"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "NT Training Book"
+                          },
+                          "image": {
+                            "type": "string",
+                            "example": "/images/book/image_1640021646558.jpg"
+                          },
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "drama",
+                              "comedy",
+                              "sport"
+                            ],
+                            "example": "drama"
+                          },
+                          "price": {
+                            "type": "number",
+                            "example": 10000
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Description about book"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Cart ID not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find cart"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "cart"
+          ],
+          "summary": "Delete cart by ID",
+          "description": "",
+          "operationId": "deleteCart",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the cart that needs to be deleted",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "security": [ { "bearerAuth": [] } ],
+          "responses": {
+            "200": {
+              "description": "Delete successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Success"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Cannot verify token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 401
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "No toke provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 403
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "No toke provided"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Cart ID not exist",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "statusCode": {
+                    "type": "number",
+                    "example": 404
+                  },
+                  "error": {
+                    "type": "string",
+                    "example": "Could not find cart"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "User": {
+        "type": "object",
+        "required": [
+          "fullName",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Lisa Nguyễn"
+          },
+          "email": {
+            "type": "string",
+            "example": "xdt@bookstore.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "@Aa123456"
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      },
+      "Book": {
+        "type": "object",
+        "required": [
+          "title",
+          "image",
+          "category",
+          "quantity",
+          "price",
+          "description"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "NT Training Book"
+          },
+          "image": {
+            "type": "string",
+            "example": "/images/book/image_1640011022375.jpg"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "drama",
+              "comedy",
+              "sport"
+            ],
+            "example": "drama"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 3
+          },
+          "price": {
+            "type": "number",
+            "example": 10000
+          },
+          "description": {
+            "type": "string",
+            "example": "Description about book"
+          }
+        },
+        "xml": {
+          "name": "Book"
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "required": [
+          "book",
+          "owner",
+          "totalAmount"
+        ],
+        "properties": {
+          "book": {
+            "type": "ObjectId",
+            "example": "61c14eb28ad6b39a27b8ab9f"
+          },
+          "owner": {
+            "type": "ObjectId",
+            "example": "52c14eb28ad6b23a27b8ab9f"
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 2
+          },
+          "isPaid": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "xml": {
+          "name": "Cart"
+        }
+      }
+    },
+    "securityDefinitions": {
+      "bearerAuth": {
+        "name": "x-access-token",
+        "in": "header",
+        "type": "apiKey",
+        "description": "JWT Authorization header"
+      }
+    }
+  }
