@@ -4,7 +4,6 @@ import BookService from '../services/book.service';
 export default class BookController {
   static async listBook(req: any, res: any, next: any): Promise<any> {
     try {
-      console.log('req.query: ', req.query);
       const result = await BookService.listBook(req.query);
       res.responseData = result;
       next();
