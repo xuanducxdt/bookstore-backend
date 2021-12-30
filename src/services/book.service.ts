@@ -88,7 +88,7 @@ export default class BookService {
     const { image: oldImage } = foundBook;
     const oldImagePath = path.join(__dirname, '../public', oldImage);
     if (fs.existsSync(oldImagePath)) {
-      fs.unlinkSync(path.join(__dirname, '../public', oldImage));
+      fs.unlinkSync(oldImagePath);
     }
     await db.Book.updateOne({
       _id: id,
@@ -109,6 +109,10 @@ export default class BookService {
       _id: id,
     });
     if (!foundBook) throw new ResourceNotFoundError('book');
+    const oldImagePath = path.join(__dirname, '../public', foundBook.image);
+    if (fs.existsSync(oldImagePath)) {
+      fs.unlinkSync(oldImagePath);
+    }
     await db.Book.deleteOne({
       _id: id,
     });

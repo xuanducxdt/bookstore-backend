@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
 import 'mocha';
 import chai, { expect } from 'chai';
@@ -98,6 +99,28 @@ describe('Book API', () => {
             expect(res.body.data[0]).to.have.property('price');
             expect(res.body.data[0]).to.have.property('description');
           }
+          done();
+        });
+    });
+
+    it('should get books by limit skip', (done) => {
+      chai.request(app)
+        .get('/api/book?limit=2&skip=1')
+        .set(adminToken)
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body.message).to.be.equal('Success');
+          expect(res.body.data).to.be.an('array');
+          expect(res.body.data.length).to.be.equal(2);
+          expect(res.body.data[0]).to.have.property('_id');
+          expect(res.body.data[0]._id).to.be.equal(books[1].id);
+          expect(res.body.data[0]).to.have.property('title');
+          expect(res.body.data[0]).to.have.property('image');
+          expect(res.body.data[0]).to.have.property('category');
+          expect(res.body.data[0]).to.have.property('quantity');
+          expect(res.body.data[0]).to.have.property('price');
+          expect(res.body.data[0]).to.have.property('description');
           done();
         });
     });
@@ -440,15 +463,15 @@ describe('Book API', () => {
         });
     });
 
-    // it('should delete book successfully with admin role', (done) => {
-    //   chai.request(app)
-    //     .delete(`/api/book/${books[1].id}`)
-    //     .set(adminToken)
-    //     .end((err, res) => {
-    //       res.should.have.status(401);
-    //       res.body.error.should.be.equal('Unauthorized');
-    //       done();
-    //     });
-    // });
+    it('should delete book successfully with admin role', (done) => {
+      chai.request(app)
+        .delete(`/api/book/${books[1].id}`)
+        .set(adminToken)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.message.should.be.equal('Success');
+          done();
+        });
+    });
   });
 });
