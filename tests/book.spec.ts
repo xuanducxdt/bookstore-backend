@@ -10,6 +10,7 @@ import MongoDB from '../src/components/mongoDB';
 import config from '../src/config';
 import { mockBookData } from './mocks/book.data';
 import { mockUserData } from './mocks/user.data';
+import { initTestData, removeTestData } from './helpers/book.helper';
 
 const {
   invalidToken,
@@ -26,14 +27,15 @@ chai.use(chaiHttp);
 chai.should();
 
 describe('Book API', () => {
-  before(() => {
+  before(async () => {
     const { mongoDB: { host, port, testDatabase } } = config;
     const connectString: string = `mongodb://${host}:${port}/${testDatabase}`;
-    MongoDB.connect(connectString)
-      .then(() => {
-        console.log('[MongoDB] - Connect to database successfully.');
-      })
-      .catch((error: any) => console.log(error));
+    await MongoDB.connect(connectString);
+    await initTestData();
+  });
+
+  after(async () => {
+    await removeTestData();
   });
 
   describe('GET /api/book', () => {
@@ -210,23 +212,23 @@ describe('Book API', () => {
         });
     });
 
-    // it('should create new book successfully with admin role', (done) => {
-    //   chai.request(app)
-    //     .post('/api/book')
-    //     .set(adminToken)
-    //     .set('content-type', 'multipart/form-data')
-    //     .field('title', books[1].title)
-    //     .field('category', books[1].category)
-    //     .field('quantity', books[1].quantity)
-    //     .field('price', books[1].price)
-    //     .field('description', books[1].description)
-    //     .attach('image', fs.readFileSync(path.join(__dirname, './images/test1.jpg')), 'test1.jpg')
-    //     .end((err, res) => {
-    //       res.should.have.status(200);
-    //       res.body.message.should.be.equal('Success');
-    //       done();
-    //     });
-    // });
+    it('should create new book successfully with admin role', (done) => {
+      chai.request(app)
+        .post('/api/book')
+        .set(adminToken)
+        .set('content-type', 'multipart/form-data')
+        .field('title', books[1].title)
+        .field('category', books[1].category)
+        .field('quantity', books[1].quantity)
+        .field('price', books[1].price)
+        .field('description', books[1].description)
+        .attach('image', fs.readFileSync(path.join(__dirname, './images/test1.jpg')), 'test1.jpg')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.message.should.be.equal('Success');
+          done();
+        });
+    });
   });
 
   describe('PUT /api/book/:id', () => {
