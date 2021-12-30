@@ -12,6 +12,7 @@ const config: ConfigData = {
     host: process.env.MONGO_DB_HOST || 'localhost',
     port: process.env.MONGO_DB_PORT || '27017',
     database: process.env.MONGO_DB_DATABASE || 'bookstore',
+    testDatabase: process.env.MONGO_DB_TEST_DATABASE || 'test-bookstore',
   },
 };
 

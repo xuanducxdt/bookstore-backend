@@ -8,6 +8,7 @@ export interface ConfigData {
       host: string;
       port: string;
       database: string;
+      testDatabase: string;
     }
 }
 

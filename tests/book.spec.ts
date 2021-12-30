@@ -2,29 +2,33 @@
 import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import fs from 'fs';
+import path from 'path';
 import app from '../src/App';
 import MongoDB from '../src/components/mongoDB';
+// import db from '../src/models/index';
+import config from '../src/config';
+import { mockBookData } from './mocks/book.data';
+import { mockUserData } from './mocks/user.data';
+
+const {
+  invalidToken,
+  userToken,
+  adminToken,
+} = mockUserData;
+
+const {
+  books
+} = mockBookData;
 
 chai.use(chaiHttp);
 chai.should();
 
-const invalidToken = {
-  'x-access-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-};
-
-const userToken = {
-  'x-access-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxYzkyMWUyZmYwZWY2Y2I2NjJlZTE3YSIsImZ1bGxOYW1lIjoiTGlzYSBOZ3V54buFbiIsImVtYWlsIjoibGlzYUBnbWFpbC5jb20iLCJyb2xlIjoidXNlciJ9LCJpYXQiOjE2NDA3OTg4NTQsImV4cCI6MTY0Mzc5ODg1NH0._cws34bGbwLtlq40A-TjnDbVmrRq4Rf7zzXqRfOFVl0',
-};
-
-// const adminToken = {
-//   'x-access-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxYzkyMTgzZmYwZWY2Y2I2NjJlZTE3NyIsImZ1bGxOYW1lIjoiWHXDom4gxJDhu6ljIiwiZW1haWwiOiJ4ZHRAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTY0MDc5ODIzOSwiZXhwIjoxNjQzNzk4MjM5fQ.jWQQVEiGdEvDDlWn_21wx3i6Dml35AQRsOy3Gvkw2gY',
-// };
-
-const bookId: string = '61c44215e0ae9c56ceb25b31';
-
 describe('Book API', () => {
   before(() => {
-    MongoDB.connect()
+    const { mongoDB: { host, port, testDatabase } } = config;
+    const connectString: string = `mongodb://${host}:${port}/${testDatabase}`;
+    MongoDB.connect(connectString)
       .then(() => {
         console.log('[MongoDB] - Connect to database successfully.');
       })
@@ -34,276 +38,308 @@ describe('Book API', () => {
   beforeEach(() => {
     // done();
   });
-  /*
-   * Test the /GET route
-   */
-  describe('No token provided', () => {
-    it('GET /api/book should throw forbidden error', (done) => {
-      chai.request(app)
-        .get('/api/book')
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
 
-    it('GET /api/book/:id should throw forbidden error', (done) => {
-      chai.request(app)
-        .get(`/api/book/${bookId}`)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
+  describe('GET /api/book', () => {
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .get('/api/book')
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
 
-    it('POST /api/book should throw forbidden error', (done) => {
-      chai.request(app)
-        .post('/api/book')
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .get('/api/book')
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
 
-    it('PUT /api/book/:id should throw Forbidden error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}`)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
+    // it('should get all books with user role', (done) => {
+    //   chai.request(app)
+    //     .get('/api/book')
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(200);
+    //       res.body.message.should.be.equal('Success');
+    //       done();
+    //     });
+    // });
 
-    it('PUT /api/book/:id/image should throw forbidden error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}/image`)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
-
-    it('DELETE /api/book/:id should throw Forbidden error', (done) => {
-      chai.request(app)
-        .delete(`/api/book/${bookId}`)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('No token provided');
-          done();
-        });
-    });
+    // it('should get all books with admin role', (done) => {
+    //   chai.request(app)
+    //     .get('/api/book')
+    //     .set(adminToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(200);
+    //       res.body.message.should.be.equal('Success');
+    //       done();
+    //     });
+    // });
   });
 
-  describe('Invalid token', () => {
-    it('GET /api/book should throw unauthorized error', (done) => {
-      chai.request(app)
-        .get('/api/book')
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
+  describe('GET /api/book/:id', () => {
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .get(`/api/book/${books[0].id}`)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
 
-    it('GET /api/book/:id should throw unauthorized error', (done) => {
-      chai.request(app)
-        .get(`/api/book/${bookId}`)
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .get(`/api/book/${books[0].id}`)
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
 
-    it('POST /api/book should throw unauthorized error', (done) => {
-      chai.request(app)
-        .post('/api/book')
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
+    // it('should get book detail with user role', (done) => {
+    //   chai.request(app)
+    //     .get(`/api/book/${books[0].id}`)
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(200);
+    //       res.body.message.should.be.equal('Success');
+    //       done();
+    //     });
+    // });
 
-    it('PUT /api/book/:id should throw unauthorized error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}`)
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
-
-    it('PUT /api/book/:id/image should throw unauthorized error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}/image`)
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
-
-    it('DELETE /api/book/:id should throw unauthorized error', (done) => {
-      chai.request(app)
-        .delete(`/api/book/${bookId}`)
-        .set(invalidToken)
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.error.should.be.equal('Unauthorized');
-          done();
-        });
-    });
+    // it('should get book detail with admin role', (done) => {
+    //   chai.request(app)
+    //     .get(`/api/book/${books[1].id}`)
+    //     .set(adminToken)
+    //     .end((err, res) => {
+    //       console.log(res);
+    //       res.should.have.status(200);
+    //       res.body.error.should.be.equal('Success');
+    //       done();
+    //     });
+    // });
   });
 
-  describe('Token with USER role', () => {
-    beforeEach((done) => {
-      done();
+  describe('POST /api/book', () => {
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .post('/api/book')
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .post('/api/book')
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw not allowed error with user role', (done) => {
+    //   chai.request(app)
+    //     .post('/api/book')
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('You are not allowed');
+    //       done();
+    //     });
+    // });
+
+    // it('should create new book successfully with admin role', (done) => {
+    //   chai.request(app)
+    //     .post('/api/book')
+    //     .set(adminToken)
+    //     .set('content-type', 'multipart/form-data')
+    //     .field('title', books[1].title)
+    //     .field('category', books[1].category)
+    //     .field('quantity', books[1].quantity)
+    //     .field('price', books[1].price)
+    //     .field('description', books[1].description)
+    //     .attach('image', fs.readFileSync(path.join(__dirname, './images/test1.jpg')), 'test1.jpg')
+    //     .end((err, res) => {
+    //       res.should.have.status(200);
+    //       res.body.message.should.be.equal('Success');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw invalid request data with admin role', (done) => {
+    //   chai.request(app)
+    //     .post('/api/book')
+    //     .set(adminToken)
+    //     .end((err, res) => {
+    //       console.log(res.body);
+    //       res.should.have.status(400);
+    //       done();
+    //     });
+    // });
+  });
+
+  describe('PUT /api/book/:id', () => {
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}`)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}`)
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw not allowed error with user role', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}`)
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('You are not allowed');
+    //       done();
+    //     });
+    // });
+
+    // it('should update book successfully with admin role', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[1].id}`)
+    //     .set(adminToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
+  });
+
+  describe('PUT /api/book/:id/image', () => {
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}/image`)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}/image`)
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
+
+    // it('should throw not allowed error with user role', (done) => {
+    //   chai.request(app)
+    //     .put(`/api/book/${books[0].id}/image`)
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('You are not allowed');
+    //       done();
+    //     });
+    // });
+
+    it('should throw invalid request data with admin role and no image provided', (done) => {
+      chai.request(app)
+        .put(`/api/book/${books[1].id}/image`)
+        .set(adminToken)
+        .end((err, res) => {
+          res.should.have.status(400);
+          done();
+        });
     });
 
-    it('GET /api/book should throw unauthorized error', (done) => {
+    it('should should update book image successfully with admin role', (done) => {
       chai.request(app)
-        .get('/api/book')
-        .set(userToken)
+        .put(`/api/book/${books[1].id}/image`)
+        .set(adminToken)
+        .attach('image', fs.readFileSync(path.join(__dirname, './images/test1.jpg')), 'test1.jpg')
         .end((err, res) => {
+          console.log(res.body);
           res.should.have.status(200);
           res.body.message.should.be.equal('Success');
           done();
         });
     });
-
-    it('GET /api/book/:id should throw unauthorized error', (done) => {
-      chai.request(app)
-        .get(`/api/book/${bookId}`)
-        .set(userToken)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.message.should.be.equal('Success');
-          done();
-        });
-    });
-
-    it('POST /api/book should throw not allowed error', (done) => {
-      chai.request(app)
-        .post('/api/book')
-        .set(userToken)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('You are not allowed');
-          done();
-        });
-    });
-
-    it('PUT /api/book/:id should throw not allowed error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}`)
-        .set(userToken)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('You are not allowed');
-          done();
-        });
-    });
-
-    it('PUT /api/book/:id/image should throw not allowed error', (done) => {
-      chai.request(app)
-        .put(`/api/book/${bookId}/image`)
-        .set(userToken)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('You are not allowed');
-          done();
-        });
-    });
-
-    it('DELETE /api/book/:id should throw not allowed error', (done) => {
-      chai.request(app)
-        .delete(`/api/book/${bookId}`)
-        .set(userToken)
-        .end((err, res) => {
-          res.should.have.status(403);
-          res.body.error.should.be.equal('You are not allowed');
-          done();
-        });
-    });
   });
 
-  // describe('Token with ADMIN role', () => {
-  //   it('GET /api/book should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .get('/api/book')
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
+  describe('DELETE /api/book/:id', () => {
+    // beforeEach(async () => {
+    //   await db.Book.create()
+    // });
+    // it('should throw forbidden error when no token provided', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/book/${books[0].id}`)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('No token provided');
+    //       done();
+    //     });
+    // });
 
-  //   it('GET /api/book/:id should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .get(`/api/book/${bookId}`)
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
+    // it('should throw unauthorized error when invalid token', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/book/${books[0].id}`)
+    //     .set(invalidToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
 
-  //   it('POST /api/book should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .post('/api/book')
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
+    // it('should throw not allowed error with user role', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/book/${books[0].id}`)
+    //     .set(userToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(403);
+    //       res.body.error.should.be.equal('You are not allowed');
+    //       done();
+    //     });
+    // });
 
-  //   it('PUT /api/book/:id should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .put(`/api/book/${bookId}`)
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
-
-  //   it('PUT /api/book/:id/image should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .put(`/api/book/${bookId}/image`)
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
-
-  //   it('DELETE /api/book/:id should throw unauthorized error', (done) => {
-  //     chai.request(app)
-  //       .delete(`/api/book/${bookId}`)
-  //       .set(adminToken)
-  //       .end((err, res) => {
-  //         res.should.have.status(401);
-  //         res.body.error.should.be.equal('Unauthorized');
-  //         done();
-  //       });
-  //   });
-  // });
+    // it('should delete book successfully with admin role', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/book/${books[1].id}`)
+    //     .set(adminToken)
+    //     .end((err, res) => {
+    //       res.should.have.status(401);
+    //       res.body.error.should.be.equal('Unauthorized');
+    //       done();
+    //     });
+    // });
+  });
 });

@@ -9,7 +9,8 @@
     "prettier:fix": "prettier --write",
     "prettier:check": "prettier --check",
     "start:dev": "nodemon",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'",
+    "test:gulp": "gulp default"
   },
   "author": "xuanduc.xdt",
   "license": "ISC",
